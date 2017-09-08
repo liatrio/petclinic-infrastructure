@@ -7,6 +7,7 @@ pipeline {
     stages {
         stage('terraform-lint') {
             steps {
+                slackSend (channel: "#ldop", color: "#3AA552", message: "Beginning Terraform pipeline for:\n${env.GIT_COMMIT}.\n${env.JOB_URL}")
                 sh 'terraform validate'
             }
             post {
@@ -24,7 +25,7 @@ pipeline {
             }
             post {
                 success {
-                    slackSend (channel: "#ldop", color: "#FFA500", message: "Terraform needs permission to continue.\n${env.JOB_URL}")
+                    slackSend (channel: "#ldop", color: "#3AA552", message: "Terraform plan was successful.\n${env.JOB_URL}")
                 }
                 failure {
                     slackSend (channel: "#ldop", color: "#CF1318", message: "Terraform plan failed.\n${env.JOB_URL}")
@@ -32,7 +33,11 @@ pipeline {
             }
         }
         stage('terraform-apply') {
+            when {
+              expression { env.BRANCH_NAME == 'master' }
+            }
             steps {
+                slackSend (channel: "#ldop", color: "#FFA500", message: "Terraform needs permission to continue.\n${env.JOB_URL}")
                 input 'Apply changes?'
                 sh 'terraform apply'
             }
