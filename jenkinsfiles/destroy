@@ -5,7 +5,7 @@ pipeline {
     agent {
       docker {
         image "hashicorp/terraform:latest"
-        args "-v '/var/lib/jenkins/.ssh/:/.ssh/'"
+        args "-v '/var/lib/jenkins/.ssh/id_rsa:/.ssh/id_rsa'"
       }
     }
     stages {
