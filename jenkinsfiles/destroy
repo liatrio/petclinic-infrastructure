@@ -1,0 +1,34 @@
+pipeline {
+    triggers {
+      /* none */
+    }
+    agent {
+      docker {
+        image "hashicorp/terraform:latest"
+        args "-v '/var/lib/jenkins/.ssh/id_rsa:/.ssh/id_rsa'"
+      }
+    }
+    stages {
+        stage('terraform-destroy') {
+            steps {
+                withCredentials([[
+                    $class: "AmazonWebServicesCredentialsBinding",
+                    credentialsId: "Jenkins AWS Creds",
+                    accessKeyVariable: "AWS_ACCESS_KEY_ID",
+                    secretKeyVariable: "AWS_SECRET_ACCESS_KEY"]]) {
+                    slackSend (channel: "#ldop", color: "#FFA500", message: "Terraform needs permission to continue.\n${env.JOB_URL}")
+                    input 'Destroy resources?'
+                    sh 'terraform destroy -force'
+                }
+            }
+            post {
+                success {
+                    slackSend (channel: "#ldop", color: "#3AA552", message: "Production instances successfully destroyed.\n${env.JOB_URL}")
+                }
+                failure {
+                    slackSend (channel: "#ldop", color: "#CF1318", message: "Production instances were not destroyed.\n${env.JOB_URL}")
+                }
+            }
+        }
+    }
+}
