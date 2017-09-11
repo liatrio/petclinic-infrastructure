@@ -1,14 +1,24 @@
+
 pipeline {
     agent {
       docker {
         image "hashicorp/terraform:latest"
+        args "-v '/var/lib/jenkins/.ssh/:/.ssh/'"
       }
     }
     stages {
         stage('terraform-lint') {
             steps {
-                slackSend (channel: "#ldop", color: "#3AA552", message: "Beginning Terraform pipeline for:\n${env.GIT_COMMIT}.\n${env.JOB_URL}")
-                sh 'terraform validate'
+                withCredentials([[
+                    $class: "AmazonWebServicesCredentialsBinding",
+                    credentialsId: "Jenkins AWS Creds",
+                    accessKeyVariable: "AWS_ACCESS_KEY_ID",
+                    secretKeyVariable: "AWS_SECRET_ACCESS_KEY"]]) {
+
+                    slackSend (channel: "#ldop", color: "#3AA552", message: "Beginning Terraform pipeline for:\n${env.GIT_COMMIT}.\n${env.JOB_URL}")
+                    sh 'terraform init'
+                    sh 'terraform validate'
+                }
             }
             post {
                 success {
@@ -21,7 +31,14 @@ pipeline {
         }
         stage('terraform-plan') {
             steps {
-                sh 'terraform plan'
+                withCredentials([[
+                    $class: "AmazonWebServicesCredentialsBinding",
+                    credentialsId: "Jenkins AWS Creds",
+                    accessKeyVariable: "AWS_ACCESS_KEY_ID",
+                    secretKeyVariable: "AWS_SECRET_ACCESS_KEY"]]) {
+
+                    sh 'terraform plan'
+                }
             }
             post {
                 success {
@@ -37,9 +54,16 @@ pipeline {
               expression { env.BRANCH_NAME == 'master' }
             }
             steps {
-                slackSend (channel: "#ldop", color: "#FFA500", message: "Terraform needs permission to continue.\n${env.JOB_URL}")
-                input 'Apply changes?'
-                sh 'terraform apply'
+                withCredentials([[
+                    $class: "AmazonWebServicesCredentialsBinding",
+                    credentialsId: "Jenkins AWS Creds",
+                    accessKeyVariable: "AWS_ACCESS_KEY_ID",
+                    secretKeyVariable: "AWS_SECRET_ACCESS_KEY"]]) {
+
+                    slackSend (channel: "#ldop", color: "#FFA500", message: "Terraform needs permission to continue.\n${env.JOB_URL}")
+                    input 'Apply changes?'
+                    sh 'terraform apply'
+                }
             }
             post {
                 success {
