@@ -57,7 +57,7 @@ resource "aws_instance" "qa" {
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
 
   tags {
-    Name = "qa-petclinicliatr.io"
+    Name = "qa-petclinic.liatr.io"
   }
 
   provisioner "remote-exec" {

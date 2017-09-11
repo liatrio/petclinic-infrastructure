@@ -1,7 +1,4 @@
 pipeline {
-    triggers {
-      /* none */
-    }
     agent {
       docker {
         image "hashicorp/terraform:latest"
@@ -18,6 +15,7 @@ pipeline {
                     secretKeyVariable: "AWS_SECRET_ACCESS_KEY"]]) {
                     slackSend (channel: "#ldop", color: "#FFA500", message: "Terraform needs permission to continue.\n${env.JOB_URL}")
                     input 'Destroy resources?'
+                    sh 'terraform init'
                     sh 'terraform destroy -force'
                 }
             }
