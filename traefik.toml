@@ -20,7 +20,7 @@ address = ":8080"
 [acme]
 # Email address used for registration
 email = "test@traefik.io"
-storageFile = "/home/ec2-user/acme.json"
+storageFile = "/etc/traefik/acme/acme.json"
 entryPoint = "https"
 onDemand = false
 OnHostRule = true
