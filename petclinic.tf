@@ -14,8 +14,8 @@ resource "aws_security_group" "web" {
   }
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -173,7 +173,23 @@ resource "aws_route53_record" "qa" {
 
 resource "aws_route53_record" "prod" {
   zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
-  name    = "prod-petclinic.liatr.io"
+  name    = "petclinic.liatr.io"
+  type    = "A"
+  ttl     = 300
+  records = ["${aws_instance.prod.public_ip}"]
+}
+
+resource "aws_route53_record" "prod-1" {
+  zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
+  name    = "petclinic-1.liatr.io"
+  type    = "A"
+  ttl     = 300
+  records = ["${aws_instance.prod.public_ip}"]
+}
+
+resource "aws_route53_record" "prod-2" {
+  zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
+  name    = "petclinic-2.liatr.io"
   type    = "A"
   ttl     = 300
   records = ["${aws_instance.prod.public_ip}"]
