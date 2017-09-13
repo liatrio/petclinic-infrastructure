@@ -36,7 +36,8 @@ resource "aws_instance" "dev" {
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
 
   tags {
-    Name = "dev-petclinic.liatr.io"
+    Name   = "dev-petclinic.liatr.io"
+    Uptime = "critical"
   }
 
   provisioner "remote-exec" {
@@ -78,7 +79,8 @@ resource "aws_instance" "qa" {
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
 
   tags {
-    Name = "qa-petclinic.liatr.io"
+    Name   = "qa-petclinic.liatr.io"
+    Uptime = "critical"
   }
 
   provisioner "remote-exec" {
@@ -120,7 +122,8 @@ resource "aws_instance" "prod" {
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
 
   tags {
-    Name = "prod-petclinic.liatr.io"
+    Name   = "prod-petclinic.liatr.io"
+    Uptime = "critical"
   }
 
   provisioner "remote-exec" {
