@@ -70,6 +70,16 @@ resource "aws_instance" "dev" {
       private_key = "${file("${var.private_key_path}")}"
     }
   }
+
+  provisioner "remote-exec" {
+    script = "${path.module}/update_keys.sh"
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = "${file("${var.private_key_path}")}"
+    }
+  }
 }
 
 resource "aws_instance" "qa" {
@@ -113,6 +123,16 @@ resource "aws_instance" "qa" {
       private_key = "${file("${var.private_key_path}")}"
     }
   }
+
+  provisioner "remote-exec" {
+    script = "${path.module}/update_keys.sh"
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = "${file("${var.private_key_path}")}"
+    }
+  }
 }
 
 resource "aws_instance" "prod" {
@@ -149,6 +169,16 @@ resource "aws_instance" "prod" {
 
   provisioner "remote-exec" {
     script = "${path.module}/launch-traefik.sh"
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = "${file("${var.private_key_path}")}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    script = "${path.module}/update_keys.sh"
 
     connection {
       type        = "ssh"
