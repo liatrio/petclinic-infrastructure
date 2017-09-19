@@ -9,7 +9,7 @@ resource "aws_vpc" "prod" {
 resource "aws_subnet" "proda" {
   vpc_id            = "${aws_vpc.prod.id}"
   cidr_block        = "10.0.0.0/24"
-  availability_zone = "us-west-1a"
+  availability_zone = "us-west-2a"
 
   tags {
     Name = "proda-petclinic"
@@ -19,7 +19,7 @@ resource "aws_subnet" "proda" {
 resource "aws_subnet" "prodb" {
   vpc_id            = "${aws_vpc.prod.id}"
   cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-west-1b"
+  availability_zone = "us-west-2b"
 
   tags {
     Name = "prodb-petclinic"
