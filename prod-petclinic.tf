@@ -123,7 +123,7 @@ resource "aws_instance" "proda" {
   subnet_id                   = "${aws_subnet.proda.id}"
   vpc_security_group_ids      = ["${aws_security_group.prod_webserver.id}"]
   associate_public_ip_address = true
-  availability_zone           = "us-east-1a"
+  availability_zone           = "us-west-2a"
 
   tags {
     Name   = "proda.petclinic.liatr.io"
@@ -169,7 +169,7 @@ resource "aws_instance" "prodb" {
   subnet_id                   = "${aws_subnet.prodb.id}"
   vpc_security_group_ids      = ["${aws_security_group.prod_webserver.id}"]
   associate_public_ip_address = true
-  availability_zone           = "us-east-1b"
+  availability_zone           = "us-west-2b"
 
   tags {
     Name   = "prodb.petclinic.liatr.io"
@@ -209,11 +209,11 @@ resource "aws_instance" "prodb" {
 }
 
 resource "aws_s3_bucket" "prod_alb_log" {
-  bucket = "liatrio_petclinic_access_log"
+  bucket = "liatrio-petclinic-access-log"
   acl    = "private"
 
   tags = {
-    Name = "liatrio_petclinic_access_log"
+    Name = "liatrio-petclinic-access-log"
   }
 }
 
