@@ -1,0 +1,10 @@
+[web]
+# Port for the status page
+address = ":8080"
+
+# Enable Docker configuration backend
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "example.com"
+watch = true
+exposedbydefault = false
