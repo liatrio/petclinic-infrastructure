@@ -5,7 +5,7 @@ resource "aws_instance" "dev" {
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
 
   tags {
-    Name   = "dev.pipeline.liatr.io"
+    Name   = "dev.petclinic.liatr.io"
     Uptime = "critical"
   }
 
