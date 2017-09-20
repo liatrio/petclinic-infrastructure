@@ -123,7 +123,7 @@ resource "aws_instance" "proda" {
   subnet_id                   = "${aws_subnet.proda.id}"
   vpc_security_group_ids      = ["${aws_security_group.prod_webserver.id}"]
   associate_public_ip_address = true
-  availability_zone           = "us-east-1a"
+  availability_zone           = "us-west-2a"
 
   tags {
     Name   = "proda.petclinic.liatr.io"
@@ -169,7 +169,7 @@ resource "aws_instance" "prodb" {
   subnet_id                   = "${aws_subnet.prodb.id}"
   vpc_security_group_ids      = ["${aws_security_group.prod_webserver.id}"]
   associate_public_ip_address = true
-  availability_zone           = "us-east-1b"
+  availability_zone           = "us-west-2b"
 
   tags {
     Name   = "prodb.petclinic.liatr.io"
@@ -209,11 +209,11 @@ resource "aws_instance" "prodb" {
 }
 
 resource "aws_s3_bucket" "prod_alb_log" {
-  bucket = "liatrio_petclinic_access_log"
+  bucket = "liatrio-petclinic-access-log"
   acl    = "private"
 
   tags = {
-    Name = "liatrio_petclinic_access_log"
+    Name = "liatrio-petclinic-access-log"
   }
 }
 
@@ -224,11 +224,43 @@ resource "aws_alb" "prod" {
   subnets         = ["${aws_subnet.proda.id}", "${aws_subnet.prodb.id}"]
 }
 
-resource "aws_alb_target_group" "prod_petclinic" {
-  name     = "prod-petclinic"
+resource "aws_alb_target_group" "proda" {
+  name     = "proda-petclinic"
   port     = 80
   protocol = "HTTP"
   vpc_id   = "${aws_vpc.prod.id}"
+}
+
+resource "aws_alb_target_group" "prodb" {
+  name     = "prodb-petclinic"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = "${aws_vpc.prod.id}"
+}
+
+resource "aws_alb_target_group_attachment" "proda" {
+  target_group_arn = "${aws_alb_target_group.proda.arn}"
+  target_id        = "${aws_instance.proda.id}"
+  port             = 80
+}
+
+resource "aws_alb_target_group_attachment" "prodb" {
+  target_group_arn = "${aws_alb_target_group.prodb.arn}"
+  target_id        = "${aws_instance.prodb.id}"
+  port             = 80
+}
+
+# Listener defaults to proda target group
+# BG deployment should swap listeners between proda and prodb target groups through AWS API
+resource "aws_alb_listener" "prod" {
+  load_balancer_arn = "${aws_alb.prod.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "${aws_alb_target_group.proda.arn}"
+    type             = "forward"
+  }
 }
 
 resource "aws_route53_record" "prod" {

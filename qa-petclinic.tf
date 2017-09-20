@@ -20,7 +20,7 @@ resource "aws_instance" "qa" {
   }
 
   provisioner "file" {
-    source      = "./traefik.toml"
+    source      = "./traefik-https.toml"
     destination = "/home/ec2-user/traefik.toml"
 
     connection {
