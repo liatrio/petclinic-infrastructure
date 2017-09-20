@@ -5,7 +5,7 @@ resource "aws_instance" "qa" {
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
 
   tags {
-    Name   = "qa-petclinic.liatr.io"
+    Name   = "qa.pipeline.liatr.io"
     Uptime = "critical"
   }
 
@@ -51,9 +51,17 @@ resource "aws_instance" "qa" {
   }
 }
 
-resource "aws_route53_record" "qa" {
+resource "aws_route53_record" "qa-petclinic" {
   zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
-  name    = "qa-petclinic.liatr.io"
+  name    = "qa.petclinic.liatr.io"
+  type    = "A"
+  ttl     = 300
+  records = ["${aws_instance.qa.public_ip}"]
+}
+
+resource "aws_route53_record" "qa-gameoflife" {
+  zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
+  name    = "qa.gameoflife.liatr.io"
   type    = "A"
   ttl     = 300
   records = ["${aws_instance.qa.public_ip}"]
