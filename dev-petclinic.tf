@@ -5,7 +5,7 @@ resource "aws_instance" "dev" {
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
 
   tags {
-    Name   = "dev-petclinic.liatr.io"
+    Name   = "dev.petclinic.liatr.io"
     Uptime = "critical"
   }
 
@@ -51,9 +51,17 @@ resource "aws_instance" "dev" {
   }
 }
 
-resource "aws_route53_record" "dev" {
+resource "aws_route53_record" "dev-petclinic" {
   zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
-  name    = "dev-petclinic.liatr.io"
+  name    = "dev.petclinic.liatr.io"
+  type    = "A"
+  ttl     = 300
+  records = ["${aws_instance.dev.public_ip}"]
+}
+
+resource "aws_route53_record" "dev-gameoflife" {
+  zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
+  name    = "dev.gameoflife.liatr.io"
   type    = "A"
   ttl     = 300
   records = ["${aws_instance.dev.public_ip}"]
