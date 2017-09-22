@@ -250,19 +250,6 @@ resource "aws_alb_target_group_attachment" "prodb" {
   port             = 80
 }
 
-# Listener defaults to proda target group
-# BG deployment should swap listeners between proda and prodb target groups through AWS API
-resource "aws_alb_listener" "prod" {
-  load_balancer_arn = "${aws_alb.prod.arn}"
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = "${aws_alb_target_group.proda.arn}"
-    type             = "forward"
-  }
-}
-
 resource "aws_route53_record" "prod" {
   zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
   name    = "petclinic.liatr.io"
@@ -277,7 +264,7 @@ resource "aws_route53_record" "prod" {
 
 resource "aws_route53_record" "proda" {
   zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
-  name    = "proda-petclinic.liatr.io"
+  name    = "proda.petclinic.liatr.io"
   type    = "A"
   ttl     = 300
   records = ["${aws_instance.proda.public_ip}"]
@@ -285,8 +272,9 @@ resource "aws_route53_record" "proda" {
 
 resource "aws_route53_record" "prodb" {
   zone_id = "${data.aws_route53_zone.liatrio.zone_id}"
-  name    = "prodb-petclinic.liatr.io"
+  name    = "prodb.petclinic.liatr.io"
   type    = "A"
   ttl     = 300
   records = ["${aws_instance.prodb.public_ip}"]
 }
+
